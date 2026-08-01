@@ -99,12 +99,12 @@ def food_type_counts(df):
 
 def top_ingredients(df, top_n=15):
 
-    if "main_ingredients" not in df.columns:
+    if "ingredients" not in df.columns:
         return pd.DataFrame()
 
     ingredient_list = []
 
-    for ingredients in df["main_ingredients"]:
+    for ingredients in df["ingredients"]:
 
         # Skip missing values
         if ingredients is None:

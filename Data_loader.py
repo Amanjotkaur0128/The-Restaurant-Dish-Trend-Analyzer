@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_PATH = os.path.join(
     BASE_DIR,
     "data",
-    "cleaned_featured_menu_data.csv"
+    "featured_menu_data.csv"
 )
 
 
@@ -49,7 +49,7 @@ def load_data():
     Uses Streamlit's cache_data to avoid reloading on every rerun.
     """
     if not os.path.exists(CSV_PATH):
-        st.error(f"Error: CSV file not found at {CSV_PATH}. Please ensure 'cleaned_menu_data.csv' is in the 'data' folder.")
+        st.error(f"Error: CSV file not found at {CSV_PATH}. Please ensure 'cleaned_featured_menu_data.csv' is in the 'data' folder.")
         return pd.DataFrame()
     try:
         df = pd.read_csv(CSV_PATH)

@@ -4,6 +4,9 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import pandas as pd
 
+px.defaults.color_discrete_sequence = ["#a9602d", "#1f6f78", "#d79a43", "#5e8b7e", "#9b4f96", "#455a8a"]
+px.defaults.color_continuous_scale = ["#f4ddc3", "#d79a43", "#a9602d"]
+
 
 # ==========================================================
 # Average Price by Restaurant
@@ -23,7 +26,7 @@ def plot_average_price_restaurant(df):
     fig.update_layout(
         xaxis_title="Restaurant",
         yaxis_title="Average Price",
-        template="plotly_white"
+        template="simple_white"
     )
 
     return fig
@@ -44,7 +47,7 @@ def plot_dish_count(df):
         text_auto=True
     )
 
-    fig.update_layout(template="plotly_white")
+    fig.update_layout(template="simple_white")
 
     return fig
 
@@ -59,11 +62,11 @@ def plot_price_distribution(df):
         df,
         x="price",
         nbins=20,
-        color_discrete_sequence=["royalblue"],
+        color_discrete_sequence=["#a9602d"],
         title="Price Distribution"
     )
 
-    fig.update_layout(template="plotly_white")
+    fig.update_layout(template="simple_white")
 
     return fig
 
@@ -82,7 +85,7 @@ def plot_boxplot(df):
         title="Restaurant Price Comparison"
     )
 
-    fig.update_layout(template="plotly_white")
+    fig.update_layout(template="simple_white")
 
     return fig
 
@@ -102,7 +105,7 @@ def plot_top_ingredients(df):
         text_auto=True
     )
 
-    fig.update_layout(template="plotly_white")
+    fig.update_layout(template="simple_white")
 
     return fig
 
@@ -154,7 +157,7 @@ def plot_cuisine_prices(df):
         text_auto=".2f"
     )
 
-    fig.update_layout(template="plotly_white")
+    fig.update_layout(template="simple_white")
 
     return fig
 
@@ -176,7 +179,7 @@ def plot_expensive_dishes(df):
 
     fig.update_layout(
         xaxis_tickangle=-45,
-        template="plotly_white"
+        template="simple_white"
     )
 
     return fig
@@ -199,7 +202,7 @@ def plot_cheapest_dishes(df):
 
     fig.update_layout(
         xaxis_tickangle=-45,
-        template="plotly_white"
+        template="simple_white"
     )
 
     return fig
@@ -221,7 +224,7 @@ def plot_scatter(df):
         title="Ingredient Count vs Price"
     )
 
-    fig.update_layout(template="plotly_white")
+    fig.update_layout(template="simple_white")
 
     return fig
 
@@ -240,7 +243,7 @@ def create_wordcloud(df):
     wc = WordCloud(
         width=1200,
         height=600,
-        background_color="white"
+        background_color="#fffdf9"
     ).generate(text)
 
     fig, ax = plt.subplots(figsize=(12,6))
@@ -286,6 +289,6 @@ def plot_menu_size(df):
         text_auto=True
     )
 
-    fig.update_layout(template="plotly_white")
+    fig.update_layout(template="simple_white")
 
     return fig

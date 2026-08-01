@@ -1,518 +1,114 @@
 import streamlit as st
-import pandas as pd
 
-# Import project modules
-from Data_loader import load_data
-from ingredient_extractor import create_features
-from trend_analysis import run_analysis
-from visualization import *
-
-# --------------------------------------------------
-# PAGE CONFIG
-# --------------------------------------------------
-
-st.set_page_config(
-    page_title="The Evolving Menu",
-    layout="wide"
-)
-# =====================================================
-# CUSTOM CSS
-# =====================================================
-
-st.markdown("""
-<style>
-
-/* ===============================
-   MAIN BACKGROUND
-================================ */
-
-.stApp{
-    background: linear-gradient(135deg,#0f172a,#1e293b,#334155);
-    color:white;
-}
-
-/* ===============================
-   HIDE STREAMLIT DEFAULTS
-================================ */
-
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
-
-/* ===============================
-   SIDEBAR
-================================ */
-
-section[data-testid="stSidebar"]{
-    background:#020617;
-}
-
-section[data-testid="stSidebar"] *{
-    color:white;
-}
-
-/* ===============================
-   TITLE
-================================ */
-
-.main-title{
-    font-size:50px;
-    font-weight:900;
-    color:#38bdf8;
-    text-align:center;
-}
-
-.subtitle{
-    text-align:center;
-    font-size:20px;
-    color:#cbd5e1;
-    margin-bottom:30px;
-}
-
-/* ===============================
-   METRIC CARDS
-================================ */
-
-.metric-card{
-
-    background:#1e293b;
-
-    border-radius:18px;
-
-    padding:25px;
-
-    text-align:center;
-
-    color:white;
-
-    border:1px solid #334155;
-
-    box-shadow:0px 5px 20px rgba(0,0,0,.45);
-
-    transition:.3s;
-
-}
-
-.metric-card:hover{
-
-    transform:translateY(-6px);
-
-    border:1px solid #38bdf8;
-
-}
-
-/* ===============================
-   SECTION TITLES
-================================ */
-
-.section-title{
-
-    font-size:28px;
-
-    font-weight:bold;
-
-    color:#38bdf8;
-
-    padding-top:20px;
-
-    padding-bottom:10px;
-
-}
-
-/* ===============================
-   BUTTONS
-================================ */
-
-.stButton>button{
-
-    background:#0ea5e9;
-
-    color:white;
-
-    border:none;
-
-    border-radius:10px;
-
-    font-weight:bold;
-
-}
-
-.stButton>button:hover{
-
-    background:#0284c7;
-
-}
-
-/* ===============================
-   DOWNLOAD BUTTON
-================================ */
-
-.stDownloadButton>button{
-
-    background:#22c55e;
-
-    color:white;
-
-    border:none;
-
-    border-radius:10px;
-
-}
-
-/* ===============================
-   DATAFRAME
-================================ */
-
-div[data-testid="stDataFrame"]{
-
-    border:2px solid #334155;
-
-    border-radius:12px;
-
-}
-
-/* ===============================
-   PLOTLY CHARTS
-================================ */
-
-div[data-testid="stPlotlyChart"]{
-
-    border-radius:15px;
-
-    border:1px solid #334155;
-
-    padding:10px;
-
-    background:#0f172a;
-
-}
-
-/* ===============================
-   SCROLL BAR
-================================ */
-
-::-webkit-scrollbar{
-    width:8px;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#38bdf8;
-    border-radius:10px;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.title("The Evolving Menu")
-st.subheader("Restaurant Dish Trend Analyzer")
-
-st.markdown("---")
-
-# --------------------------------------------------
-# LOAD DATA
-# --------------------------------------------------
-
-df = load_data()
-
-if df.empty:
-    st.error("No data found.")
-    st.stop()
-
-# --------------------------------------------------
-# FEATURE ENGINEERING
-# --------------------------------------------------
-
-df = create_features(df)
-
-# --------------------------------------------------
-# ANALYSIS
-# --------------------------------------------------
-
-analysis = run_analysis(df)
-
-# --------------------------------------------------
-# SIDEBAR FILTERS
-# --------------------------------------------------
-
-st.sidebar.title("Filters")
-
-# Restaurant
-restaurant = st.sidebar.selectbox(
-    "Restaurant",
-    ["All"] + sorted(df["restaurant"].unique())
+from dashboard_utils import get_menu_data
+
+st.set_page_config(page_title="The Evolving Menu", layout="wide")
+
+PROJECT_TECHNOLOGIES = [
+    "Python", "Streamlit", "Pandas", "NumPy", "Plotly", "Beautiful Soup",
+    "Requests", "Regular Expressions", "Matplotlib", "WordCloud",
+]
+DEVELOPERS = ["Amanjot Kaur", "Tarannum"]
+DATASET_FILE = "data/cleaned_featured_menu_data.csv"
+
+st.markdown(
+    """
+    <style>
+        .stApp { background: #f7f4ef; color: #172a3a; }
+        [data-testid="stHeader"] { background: rgba(0, 0, 0, 0); }
+
+        
+        [data-testid="stSidebar"] { background: linear-gradient(180deg, #172a3a 0%, #0d1b2a 100%); }
+[data-testid="stSidebar"] * { color: #f8f4eb; }
+        [data-testid="stSidebarNav"] a,
+        [data-testid="stSidebarNav"] a span { color: #f8f4eb !important; opacity: 1 !important; font-weight: 600; }
+        [data-testid="stSidebarNav"] a:hover { background: #315468 !important; color: #ffffff !important; border-radius: 8px; }
+        [data-testid="stSidebarNav"] a[aria-current="page"] { background: #f2dfc4 !important; border-radius: 8px; }
+        [data-testid="stSidebarNav"] a[aria-current="page"],
+        [data-testid="stSidebarNav"] a[aria-current="page"] span { color: #172a3a !important; font-weight: 800 !important; }
+
+        /* All sidebar text stays light */
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] span,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] a,
+        [data-testid="stSidebar"] button,
+        [data-testid="stSidebar"] [role="button"] {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+
+        .stApp p, .stApp label, .stApp h1, .stApp h2, .stApp h3 { color: #172a3a; }
+        .hero-card { background: linear-gradient(115deg, #172a3a 0%, #274c5e 68%, #9c5c2b 100%); border-radius: 22px; padding: 2.2rem 2.5rem; color: #ffffff; margin: 0.5rem 0 1.5rem 0; box-shadow: 0 12px 28px rgba(23,42,58,.18); }
+        .hero-card h1 { color: #ffffff; font-size: 2.6rem; margin: 0; }
+        .hero-card p { color: #e6edf0; font-size: 1.05rem; margin: .6rem 0 0; }
+        .section-label { color: #9c5c2b; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .78rem; }
+        .technology-chip { display: inline-block; padding: .45rem .7rem; margin: .25rem .2rem .25rem 0; border-radius: 999px; background: #e3ece8; color: #173d42; font-size: .85rem; font-weight: 600; }
+        .credit-card { background: #ffffff; border-left: 5px solid #c78842; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 14px rgba(23,42,58,.08); }
+        [data-testid="stMetric"] { background: #ffffff; border: 1px solid #e6ded2; border-radius: 14px; padding: 1rem; box-shadow: 0 4px 14px rgba(23,42,58,.06); }
+        .stButton > button, .stDownloadButton > button { background: #a9602d; color: #ffffff; border: 0; border-radius: 9px; font-weight: 600; }
+        .stButton > button:hover, .stDownloadButton > button:hover { background: #7d451f; color: #ffffff; }
+        div[data-testid="stExpander"] { background: #ffffff; border: 1px solid #e6ded2; border-radius: 12px; }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
 
-# Food Type
-food = st.sidebar.selectbox(
-    "Food Type",
-    ["All", "Veg", "Non-Veg"]
-)
+def menu_assistant_reply(question):
+    """Answer common menu questions using the project dataset."""
+    data = get_menu_data()
+    query = question.lower()
 
-# Dish Type
-dish = st.sidebar.selectbox(
-    "Dish Type",
-    ["All"] + sorted(df["dish_type"].unique())
-)
+    if "price" in query or "cost" in query or "expensive" in query:
+        highest = data.loc[data["price"].idxmax()]
+        return f"The average menu price is {data['price'].mean():,.0f}. The most expensive dish is {highest['dish_name']} at {highest['price']:,.0f}."
+    if "restaurant" in query:
+        counts = data["restaurant"].value_counts()
+        return f"The dataset has {len(counts)} restaurants. {counts.index[0]} has the largest menu with {counts.iloc[0]} dishes."
+    if "veg" in query or "vegetarian" in query:
+        vegetarian = (data["food_type"] == "Veg").sum()
+        return f"There are {vegetarian} vegetarian dishes out of {len(data)} menu items."
+    if "ingredient" in query or "popular" in query or "top" in query:
+        ingredients = data["ingredients"].fillna("").str.split(",").explode().str.strip()
+        top = ingredients[ingredients.ne("")].value_counts().head(3)
+        return "The most common extracted ingredients are " + ", ".join(f"{name} ({count})" for name, count in top.items()) + "."
+    return "Try asking about prices, restaurants, vegetarian dishes, or popular ingredients."
 
-# Price
-price = st.sidebar.slider(
-    "Price",
-    int(df.price.min()),
-    int(df.price.max()),
-    (
-        int(df.price.min()),
-        int(df.price.max())
-    )
-)
 
-# --------------------------------------------------
-# APPLY FILTERS
-# --------------------------------------------------
+def render_chatbot():
+    with st.sidebar:
+        st.divider()
+        st.markdown(
+            "<h3 style='color: white;'>Menu Assistant</h3>",
+            unsafe_allow_html=True
+        )
+        st.caption("Ask about prices, restaurants, vegetarian dishes, or ingredients.")
+        if "chat_messages" not in st.session_state:
+            st.session_state.chat_messages = []
+        for message in st.session_state.chat_messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+        question = st.chat_input("Ask about the menu", key="menu_assistant_input")
+        if question:
+            st.session_state.chat_messages.extend([
+                {"role": "user", "content": question},
+                {"role": "assistant", "content": menu_assistant_reply(question)},
+            ])
+            st.rerun()
+        if st.button("Clear chat", use_container_width=True):
+            st.session_state.chat_messages = []
+            st.rerun()
 
-filtered = df.copy()
 
-if restaurant != "All":
-    filtered = filtered[
-        filtered["restaurant"] == restaurant
-    ]
-
-if food != "All":
-    filtered = filtered[
-        filtered["food_type"] == food
-    ]
-
-if dish != "All":
-    filtered = filtered[
-        filtered["dish_type"] == dish
-    ]
-
-filtered = filtered[
-    (filtered["price"] >= price[0]) &
-    (filtered["price"] <= price[1])
+pages = [
+    st.Page("pages/1.Home.py", title="Home"),
+    st.Page("pages/2.Overview.py", title="Overview"),
+    st.Page("pages/3.dataset.py", title="Dataset"),
+    st.Page("pages/4.Ingredients&dishes.py", title="Ingredients & dishes"),
+    st.Page("pages/5.Pricing.py", title="Pricing"),
 ]
 
-# --------------------------------------------------
-# RUN ANALYSIS AGAIN ON FILTERED DATA
-# --------------------------------------------------
-
-analysis = run_analysis(filtered)
-
-# --------------------------------------------------
-# METRICS
-# --------------------------------------------------
-
-st.header("Dashboard Summary")
-
-col1, col2, col3, col4 = st.columns(4)
-
-col1.metric(
-    "Restaurants",
-    filtered["restaurant"].nunique()
-)
-
-col2.metric(
-    "Total Dishes",
-    len(filtered)
-)
-
-col3.metric(
-    "Average Price",
-    f"${filtered['price'].mean():.2f}"
-)
-
-col4.metric(
-    "Highest Price",
-    f"${filtered['price'].max():.2f}"
-)
-
-st.markdown("---")
-
-# --------------------------------------------------
-# DATA TABLE
-# --------------------------------------------------
-
-st.header("Dataset")
-
-df = pd.read_csv("data/cleaned_featured_menu_data.csv")
-
-st.dataframe(df, use_container_width=True)
-
-st.markdown("---")
-
-# --------------------------------------------------
-# VISUALIZATIONS
-# --------------------------------------------------
-
-st.header("Restaurant Analysis")
-
-st.plotly_chart(
-    plot_average_price_restaurant(
-        analysis["avg_price_restaurant"]
-    ),
-    use_container_width=True
-)
-
-st.plotly_chart(
-    plot_dish_count(
-        analysis["dish_count"]
-    ),
-    use_container_width=True
-)
-
-st.plotly_chart(
-    plot_price_distribution(filtered),
-    use_container_width=True
-)
-
-st.plotly_chart(
-    plot_boxplot(filtered),
-    use_container_width=True
-)
-
-st.markdown("---")
-
-# --------------------------------------------------
-# CUISINE ANALYSIS
-# --------------------------------------------------
-
-st.header("Cuisine Analysis")
-
-st.plotly_chart(
-    plot_cuisine_prices(
-        analysis["avg_price_cuisine"]
-    ),
-    use_container_width=True
-)
-
-# --------------------------------------------------
-# INGREDIENT ANALYSIS
-# --------------------------------------------------
-
-st.header("Ingredient Analysis")
-
-if not analysis["top_ingredients"].empty:
-
-    st.plotly_chart(
-        plot_top_ingredients(
-            analysis["top_ingredients"]
-        ),
-        use_container_width=True
-    )
-
-fig = create_wordcloud(filtered)
-
-st.markdown("---")
-
-# --------------------------------------------------
-# FOOD TYPE
-# --------------------------------------------------
-
-st.header("Food Type")
-
-if not analysis["food_type_count"].empty:
-
-    st.plotly_chart(
-        plot_food_types(
-            analysis["food_type_count"]
-        ),
-        use_container_width=True
-    )
-
-# --------------------------------------------------
-# DISH TYPE
-# --------------------------------------------------
-
-st.header("Dish Types")
-
-if not analysis["dish_type_count"].empty:
-
-    st.plotly_chart(
-        plot_dish_types(
-            analysis["dish_type_count"]
-        ),
-        use_container_width=True
-    )
-
-# --------------------------------------------------
-# SCATTER
-# --------------------------------------------------
-
-st.header("Ingredient Count vs Price")
-
-st.plotly_chart(
-    plot_scatter(filtered),
-    use_container_width=True
-)
-
-# --------------------------------------------------
-# MENU SIZE
-# --------------------------------------------------
-
-st.header("Restaurant Menu Size")
-
-st.plotly_chart(
-    plot_menu_size(
-        analysis["menu_size"]
-    ),
-    use_container_width=True
-)
-
-# --------------------------------------------------
-# EXPENSIVE DISHES
-# --------------------------------------------------
-
-st.header("Most Expensive Dishes")
-
-st.dataframe(
-    analysis["expensive_dishes"],
-    use_container_width=True
-)
-
-st.plotly_chart(
-    plot_expensive_dishes(
-        analysis["expensive_dishes"]
-    ),
-    use_container_width=True
-)
-
-# --------------------------------------------------
-# CHEAPEST DISHES
-# --------------------------------------------------
-
-st.header("Cheapest Dishes")
-
-st.dataframe(
-    analysis["cheap_dishes"],
-    use_container_width=True
-)
-
-st.plotly_chart(
-    plot_cheapest_dishes(
-        analysis["cheap_dishes"]
-    ),
-    use_container_width=True
-)
-
-# --------------------------------------------------
-# DOWNLOAD
-# --------------------------------------------------
-
-st.markdown("---")
-
-st.download_button(
-    label="Download Filtered Dataset",
-    data=filtered.to_csv(index=False),
-    file_name="filtered_menu_data.csv",
-    mime="text/csv"
-)
-
-# --------------------------------------------------
-# FOOTER
-# --------------------------------------------------
-
-st.markdown("---")
-
-st.caption(
-    "The Evolving Menu • Restaurant Dish Trend Analyzer • Built with Streamlit & Plotly"
-)
+selected_page = st.navigation(pages, position="sidebar")
+render_chatbot()
+selected_page.run()
