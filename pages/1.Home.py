@@ -17,7 +17,7 @@ FOOD_IMAGES = [
     "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=80",
 ]
 
-st.markdown("<div class='hero-card'><h1>The Evolving Menu: Restaurant Dish Trend Analyzer</h1><p>Explore restaurant dishes, ingredients at the different pricing in one interactive dashboard.</p></div>", unsafe_allow_html=True)
+st.markdown("<div class='hero-card'><h1>The Restaurant Dish Trend Analyzer</h1><p>Explore restaurant dishes, ingredients at the different pricing in one interactive dashboard.</p></div>", unsafe_allow_html=True)
 st.image(HERO_IMAGE, use_container_width=True)
 
 menu_data = get_menu_data()
