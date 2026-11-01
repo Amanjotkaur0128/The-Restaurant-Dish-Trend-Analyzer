@@ -2,7 +2,7 @@ import streamlit as st
 
 from dashboard_utils import get_menu_data
 
-st.set_page_config(page_title="The Evolving Menu", layout="wide")
+st.set_page_config(page_title="The Restaurant Dish Trend Analyzer", layout="wide")
 
 PROJECT_TECHNOLOGIES = [
     "Python", "Streamlit", "Pandas", "NumPy", "Plotly", "Beautiful Soup",
